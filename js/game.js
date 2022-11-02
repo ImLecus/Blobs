@@ -8,13 +8,33 @@ renderer.setSize(document.getElementById("simulation").offsetWidth, document.get
 renderer.shadowMap.enabled = true;
 document.getElementById("simulation").appendChild(renderer.domElement);
 
+class Blob {
+    geometry;
+    material; 
+    object;
+    constructor(){
+        console.log("Blob created");
+        this.geometry = new THREE.BoxGeometry(1,1,1);
+        this.material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+        this.object = new THREE.Mesh(this.geometry,this.material);
+        this.spawn();
+    }
+    spawn(){
+        this.object.position.set(0,0,0.5);
+        scene.add(this.object);
+    }
+    walk(){
+        this.object.translateY(0.01);
+    }
+}
+var blob = new Blob();
+
 // CUBE
 var geometry = new THREE.BoxGeometry(1, 1, 1);
 var material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
 var cube = new THREE.Mesh(geometry, material);
 cube.castShadow = true;
 cube.position.set(0,0,0.5);
-scene.add(cube);
 
 // LIGHT
 var light = new THREE.DirectionalLight(0xffffff, 1, 100);
@@ -34,9 +54,8 @@ camera.position.set(0,-20,20);
 camera.rotation.set(Math.PI/4,0,0);
 
 setInterval( () => { 
-    cube.rotation.z += 0.5 * (Math.random() >= 0.4? -1:1);
-    console.log("Rotating");
-    console.log(cube.position)
+    blob.object.rotation.z += 0.5 * (Math.random() >= 0.4? -1:1);
+    console.log("Rotating...");
 
 }, 1000);
 function Start(){
@@ -44,7 +63,7 @@ function Start(){
     
 }
 function Update(){
-    cube.translateY(0.01);
+    blob.walk();
 }
 function render() {
     Update();
