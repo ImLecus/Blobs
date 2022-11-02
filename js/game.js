@@ -13,11 +13,11 @@ var geometry = new THREE.BoxGeometry(1, 1, 1);
 var material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
 var cube = new THREE.Mesh(geometry, material);
 cube.castShadow = true;
-cube.position.set(0,0,1);
+cube.position.set(0,0,0.5);
 scene.add(cube);
 
 // LIGHT
-var light = new THREE.DirectionalLight(0xffffff, 1, 10);
+var light = new THREE.DirectionalLight(0xffffff, 1, 100);
 light.position.set(-1, 1, 1);
 light.castShadow = true;
 scene.add(light);
@@ -30,20 +30,21 @@ plane.receiveShadow = true;
 plane.position.set(0, 0, 0);
 scene.add(plane);
 
-camera.position.set(10,-10,30);
-camera.rotation.z = Math.PI/4;
+camera.position.set(0,-20,20);
+camera.rotation.set(Math.PI/4,0,0);
 
 setInterval( () => { 
-    cube.rotation.z += 0.5 * (Math.random() >= 0.5? -1:1);
+    cube.rotation.z += 0.5 * (Math.random() >= 0.4? -1:1);
     console.log("Rotating");
+    console.log(cube.position)
 
-}, 3000);
+}, 1000);
 function Start(){
 
     
 }
 function Update(){
-    cube.translateX(0.01);
+    cube.translateY(0.01);
 }
 function render() {
     Update();
