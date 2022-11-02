@@ -1,4 +1,5 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
+import * as THREE from './three.module.js';
+
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 var renderer = new THREE.WebGLRenderer({ alpha: true });
@@ -6,9 +7,13 @@ renderer.setSize(document.getElementById("simulation").offsetWidth, document.get
 renderer.shadowMap.enabled = true;
 document.getElementById("simulation").appendChild(renderer.domElement);
 
+function randomIntFromInterval(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
 var conditions = {
-    initialBlobs : 4,
-    initialFood : 2
+    initialBlobs : 3,
+    initialFood : 4
 }
 
 //BLOB
@@ -20,6 +25,7 @@ class Blob {
         this.geometry = new THREE.BoxGeometry(1,1,1);
         this.material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
         this.object = new THREE.Mesh(this.geometry,this.material);
+        this.object.castShadow = true;
         this.spawn();
     }
     spawn(){
@@ -32,10 +38,26 @@ class Blob {
     }
 }
 var blobs = [];
-function createBlob(){
-    blobs.push(new Blob());
-}
 
+//FOOD
+class Food{
+    geometry;
+    material; 
+    object;
+    constructor(){
+        this.geometry = new THREE.SphereGeometry();
+        this.material = new THREE.MeshStandardMaterial({ color: 0xffff00 });
+        this.object = new THREE.Mesh(this.geometry,this.material);
+        this.object.castShadow = true;
+        this.spawn();
+    }
+    spawn(){
+        this.object.scale.set(0.5,0.5,0.5)
+        this.object.position.set(randomIntFromInterval(-8,8),randomIntFromInterval(-8,8),0.5);
+        scene.add(this.object);
+    }
+}
+var foods = [];
 
 // LIGHT
 var light = new THREE.DirectionalLight(0xffffff, 1, 100);
@@ -55,12 +77,12 @@ camera.position.set(0,-20,20);
 camera.rotation.set(Math.PI/4,0,0);
 
 
-
-
 function Start(){
     for(let i=0; i< conditions.initialBlobs; i++){
-        console.log(`Created ${conditions.initialBlobs} ${conditions.initialBlobs == 1? "blob":"blobs"}`);
-        createBlob();
+        blobs.push(new Blob());
+    }
+    for(let i=0; i< conditions.initialFood; i++){
+        foods.push(new Food());
     }
 }
 function Update(){

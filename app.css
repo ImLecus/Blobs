@@ -1,9 +1,9 @@
 body{
     margin: 0;
 }
+
 #simulation{
     width: 100vw;
     height: 100vh;
     resize: horizontal;
-    /*background-color: green;*/
 }
