@@ -16,6 +16,8 @@ var conditions = {
     initialFood : 4
 }
 
+var generations = 0;
+var isRunning = true;
 //BLOB
 class Blob {
     object;
@@ -40,7 +42,7 @@ class Blob {
             new THREE.Vector3()
         );
         this.bounds.setFromObject(this.object);
-
+        
         this.energy = 100;
         this.spawn();
         
@@ -50,9 +52,11 @@ class Blob {
         scene.add(this.object);
     }
     walk(){
-        this.object.translateY(0.04 * this.speed);
-        if(Math.random() > 0.6){
-            this.object.rotation.z += 0.1 * (Math.random() >= 0.4? -1:1);
+        if(isRunning){
+           this.object.translateY(0.04 * this.speed);
+            if(Math.random() > 0.6){
+                this.object.rotation.z += 0.1 * (Math.random() >= 0.4? -1:1);
+            } 
         }
     }
     die(){
@@ -94,7 +98,7 @@ class Food{
         this.spawn();
     }
     spawn(){
-        this.object.scale.set(0.5,0.5,0.5)
+        this.object.scale.set(0.35,0.35,0.35)
         this.object.position.set(randomIntFromInterval(-8,8),randomIntFromInterval(-8,8),0.5);
         scene.add(this.object);
     }
@@ -123,8 +127,22 @@ camera.position.set(15,-15,15);
 camera.rotateX(Math.PI/4)
 camera.rotateOnWorldAxis(new THREE.Vector3(0,0,1),Math.PI/4)
 
-function checkCollisions(obj){
-    
+function genEnd(){
+    console.log(`End of generation ${generations} \nStarting a new generation...`);
+    blobs.forEach(blob => {
+        isRunning = false;
+    });
+    setTimeout(()=>{
+        genStart();
+    }, 2000)
+}
+function genStart(){
+    generations++;
+    isRunning = true;
+    console.log(`Generation ${generations} \n------------`)
+    setTimeout(()=>{
+        genEnd();
+    }, 15000)
 }
 
 function Start(){
@@ -134,9 +152,7 @@ function Start(){
     for(let i=0; i< conditions.initialFood; i++){
         foods.push(new Food());
     }
-    setTimeout(()=>{
-
-    }, 15000)
+    genStart();
 }
 function Update(){
     blobs.forEach(blob => {    
