@@ -28,10 +28,10 @@ class Blob {
         this.speed = speed;
         this.size = size;
         this.sense = sense;
-
+        this.points = 0;
         this.object = new THREE.Mesh(
             new THREE.BoxGeometry(1,1,1),
-            new THREE.MeshStandardMaterial({ color: `rgb(0,255,255)` })
+            new THREE.MeshToonMaterial({ color: `rgb(0,255,255)` })
         );
         this.object.castShadow = true;
 
@@ -61,10 +61,20 @@ class Blob {
     }
     eat(){
         this.points++;
-        console.log("Eating...")
+        console.log(`Blob ${blobs.indexOf(this)} is eating... now it has ${this.points} points`)
     }
     reproduce(){
 
+    }
+    update(){
+        this.bounds.copy(this.object.geometry.boundingBox).applyMatrix4(this.object.matrixWorld);
+        this.walk();
+        foods.forEach(f => {
+            if(this.bounds.intersectsSphere(f.bounds)){
+                f.delete();
+                this.eat();
+            }
+        })
     }
 }
 var blobs = [];
@@ -75,7 +85,7 @@ class Food{
     constructor(){
         this.object = new THREE.Mesh(
                 new THREE.SphereGeometry(),
-                new THREE.MeshStandardMaterial({ color: 0xffff00 })
+                new THREE.MeshToonMaterial({ color: 0xffff00 })
             );
         this.object.castShadow = true;
 
@@ -88,18 +98,22 @@ class Food{
         this.object.position.set(randomIntFromInterval(-8,8),randomIntFromInterval(-8,8),0.5);
         scene.add(this.object);
     }
+    delete(){
+        scene.remove(this.object);
+        foods.splice(foods.indexOf(this),1)
+    }
 }
 var foods = [];
 
 // LIGHT
 var light = new THREE.DirectionalLight(0xffffff, 1, 100);
-light.position.set(-1, 1, 1);
+light.position.set(0, 0, 1);
 light.castShadow = true;
 scene.add(light);
 
 // PLANE
 var planeGeometry = new THREE.PlaneGeometry(20, 20, 32, 32);
-var planeMaterial = new THREE.MeshStandardMaterial({ color: 0xfefefe });
+var planeMaterial = new THREE.MeshStandardMaterial({ color: 0xcdcdcd });
 var plane = new THREE.Mesh(planeGeometry, planeMaterial);
 plane.receiveShadow = true;
 plane.position.set(0, 0, 0);
@@ -125,10 +139,8 @@ function Start(){
     }, 15000)
 }
 function Update(){
-    blobs.forEach(blob => {
-        blob.bounds.copy(blob.object.geometry.boundingBox).applyMatrix4(blob.object.matrixWorld);
-        blob.walk();
-        checkCollisions(blob.bounds);
+    blobs.forEach(blob => {    
+        blob.update();
     });
 
 }
