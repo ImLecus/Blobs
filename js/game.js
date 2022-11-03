@@ -18,37 +18,69 @@ var conditions = {
 
 //BLOB
 class Blob {
-    geometry;
-    material; 
     object;
-    constructor(){
-        this.geometry = new THREE.BoxGeometry(1,1,1);
-        this.material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-        this.object = new THREE.Mesh(this.geometry,this.material);
+    bounds;
+    points;
+    speed = 1;
+    size = 1;
+    sense = 1;
+    constructor(speed,size,sense){
+        this.speed = speed;
+        this.size = size;
+        this.sense = sense;
+
+        this.object = new THREE.Mesh(
+            new THREE.BoxGeometry(1,1,1),
+            new THREE.MeshStandardMaterial({ color: `rgb(0,255,255)` })
+        );
         this.object.castShadow = true;
+
+        this.bounds = new THREE.Box3(
+            new THREE.Vector3(),
+            new THREE.Vector3()
+        );
+        this.bounds.setFromObject(this.object);
+
+        this.energy = 100;
         this.spawn();
+        
     }
     spawn(){
         this.object.position.set(0,0,0.5);
         scene.add(this.object);
     }
     walk(){
-        this.object.translateY(0.02);
-        this.object.rotation.z += 0.05 * (Math.random() >= 0.4? -1:1);
+        this.object.translateY(0.04 * this.speed);
+        if(Math.random() > 0.6){
+            this.object.rotation.z += 0.1 * (Math.random() >= 0.4? -1:1);
+        }
+    }
+    die(){
+        scene.remove(this.object);
+        blobs.splice(blobs.indexOf(this),1)
+    }
+    eat(){
+        this.points++;
+        console.log("Eating...")
+    }
+    reproduce(){
+
     }
 }
 var blobs = [];
-
 //FOOD
 class Food{
-    geometry;
-    material; 
     object;
+    bounds;
     constructor(){
-        this.geometry = new THREE.SphereGeometry();
-        this.material = new THREE.MeshStandardMaterial({ color: 0xffff00 });
-        this.object = new THREE.Mesh(this.geometry,this.material);
+        this.object = new THREE.Mesh(
+                new THREE.SphereGeometry(),
+                new THREE.MeshStandardMaterial({ color: 0xffff00 })
+            );
         this.object.castShadow = true;
+
+        this.bounds = new THREE.Sphere(this.object.position,1)
+
         this.spawn();
     }
     spawn(){
@@ -73,22 +105,32 @@ plane.receiveShadow = true;
 plane.position.set(0, 0, 0);
 scene.add(plane);
 
-camera.position.set(0,-20,20);
-camera.rotation.set(Math.PI/4,0,0);
+camera.position.set(15,-15,15);
+camera.rotateX(Math.PI/4)
+camera.rotateOnWorldAxis(new THREE.Vector3(0,0,1),Math.PI/4)
 
+function checkCollisions(obj){
+    
+}
 
 function Start(){
     for(let i=0; i< conditions.initialBlobs; i++){
-        blobs.push(new Blob());
+        blobs.push(new Blob(1,1,1));
     }
     for(let i=0; i< conditions.initialFood; i++){
         foods.push(new Food());
     }
+    setTimeout(()=>{
+
+    }, 15000)
 }
 function Update(){
     blobs.forEach(blob => {
+        blob.bounds.copy(blob.object.geometry.boundingBox).applyMatrix4(blob.object.matrixWorld);
         blob.walk();
+        checkCollisions(blob.bounds);
     });
+
 }
 function render() {
     Update();
