@@ -55,12 +55,10 @@ class Blob {
         scene.add(this.object);
     }
     walk(){
-        if(isRunning){
-           this.object.translateY(0.04 * this.speed);
-            if(Math.random() > 0.6){
-                this.object.rotation.z += 0.1 * (Math.random() >= 0.4? -1:1);
-            } 
-        }
+        this.object.translateY(0.04 * this.speed);
+        if(Math.random() > 0.6){
+            this.object.rotation.z += 0.1 * (Math.random() >= 0.4? -1:1);
+        } 
     }
     die(){
         scene.remove(this.object);
@@ -71,12 +69,15 @@ class Blob {
         console.log(`Blob ${blobs.indexOf(this)} is eating... now it has ${this.points} points`)
     }
     reproduce(){
-        blobs.push(new Blob(this.speed,this.size,this.sense));
+        blobs.push(new Blob(1,1,1));
+        console.log(`Congratulations! Blob ${blobs.indexOf(this)} is reproducing!`)
         console.log(blobs)
     }
     update(){
         this.bounds.copy(this.object.geometry.boundingBox).applyMatrix4(this.object.matrixWorld);
-        this.walk();
+        if(isRunning){
+            this.walk();
+        }
         foods.forEach(f => {
             if(this.bounds.intersectsSphere(f.bounds)){
                 f.delete();
@@ -137,10 +138,6 @@ function genEnd(){
         if(blobs[i].points == 0){
             blobs[i].die();
         }
-        // else if(blobs[i].points > 1){
-        //     console.log(`Congratulations! Blob ${blobs.indexOf(blobs[i])} is reproducing!`)
-        //     blobs[i].reproduce();
-        // }
     }
     for (let i = 0; i < foods.length; i++) {
         scene.remove(foods[i].object);  
@@ -153,14 +150,18 @@ function genEnd(){
     }, 2000)
 }
 function genStart(){
+for(let i = 0; i < blobs.length; i++){
+        if(blobs[i].points >= 2){
+            blobs[i].reproduce();
+        }
+    }
     generations++;
     isRunning = true;
     console.log(`Generation ${generations} \n------------`);
     blobs.forEach(blob => {
         blob.points = 0;
     });
-    
-    console.log(foods)
+    console.log(blobs)
     for (let i = 0; i < conditions.initialFood; i++) {
         foods.push(new Food())
     }
@@ -170,9 +171,9 @@ function genStart(){
 }
 
 function Start(){
-    //for(let i=0; i< conditions.initialBlobs; i++){
-    //    blobs.push(new Blob(1,1,1));
-    //}
+    for(let i=0; i< conditions.initialBlobs; i++){
+        blobs.push(new Blob(1,1,1));
+    }
     
     genStart();
 }
