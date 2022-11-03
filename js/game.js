@@ -13,11 +13,14 @@ function randomIntFromInterval(min, max) {
 
 var conditions = {
     initialBlobs : 3,
-    initialFood : 4
+    initialFood : 10
 }
 
 var generations = 0;
 var isRunning = true;
+var blobs = [];
+var foods = [];
+
 //BLOB
 class Blob {
     object;
@@ -68,7 +71,8 @@ class Blob {
         console.log(`Blob ${blobs.indexOf(this)} is eating... now it has ${this.points} points`)
     }
     reproduce(){
-
+        blobs.push(new Blob(this.speed,this.size,this.sense));
+        console.log(blobs)
     }
     update(){
         this.bounds.copy(this.object.geometry.boundingBox).applyMatrix4(this.object.matrixWorld);
@@ -81,7 +85,7 @@ class Blob {
         })
     }
 }
-var blobs = [];
+
 //FOOD
 class Food{
     object;
@@ -107,7 +111,7 @@ class Food{
         foods.splice(foods.indexOf(this),1)
     }
 }
-var foods = [];
+
 
 // LIGHT
 var light = new THREE.DirectionalLight(0xffffff, 1, 100);
@@ -129,9 +133,21 @@ camera.rotateOnWorldAxis(new THREE.Vector3(0,0,1),Math.PI/4)
 
 function genEnd(){
     console.log(`End of generation ${generations} \nStarting a new generation...`);
-    blobs.forEach(blob => {
-        isRunning = false;
-    });
+    for(let i = 0; i < blobs.length; i++){
+        if(blobs[i].points == 0){
+            blobs[i].die();
+        }
+        // else if(blobs[i].points > 1){
+        //     console.log(`Congratulations! Blob ${blobs.indexOf(blobs[i])} is reproducing!`)
+        //     blobs[i].reproduce();
+        // }
+    }
+    for (let i = 0; i < foods.length; i++) {
+        scene.remove(foods[i].object);  
+    }
+    foods = [];
+
+    isRunning = false;
     setTimeout(()=>{
         genStart();
     }, 2000)
@@ -139,19 +155,25 @@ function genEnd(){
 function genStart(){
     generations++;
     isRunning = true;
-    console.log(`Generation ${generations} \n------------`)
+    console.log(`Generation ${generations} \n------------`);
+    blobs.forEach(blob => {
+        blob.points = 0;
+    });
+    
+    console.log(foods)
+    for (let i = 0; i < conditions.initialFood; i++) {
+        foods.push(new Food())
+    }
     setTimeout(()=>{
         genEnd();
     }, 15000)
 }
 
 function Start(){
-    for(let i=0; i< conditions.initialBlobs; i++){
-        blobs.push(new Blob(1,1,1));
-    }
-    for(let i=0; i< conditions.initialFood; i++){
-        foods.push(new Food());
-    }
+    //for(let i=0; i< conditions.initialBlobs; i++){
+    //    blobs.push(new Blob(1,1,1));
+    //}
+    
     genStart();
 }
 function Update(){
