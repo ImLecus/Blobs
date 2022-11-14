@@ -1,9 +1,28 @@
 body{
     margin: 0;
+    display: flex;
 }
-
-#simulation{
-    width: 100vw;
+p{
+    margin: 0;
+}
+#options{
+    width: 20vw;
     height: 100vh;
+    background-color: #3C4043;
+    color: white;
+    padding: 20px;
+}
+#options ul{
+    list-style-type: none;
+}
+#options ul li{
+    margin: 10px 0;
+}
+.small{
+    width: 30px;
+}
+#simulation{
+    width: 50vw;
+    height: 50vh;
     resize: horizontal;
 }
