@@ -10,12 +10,19 @@ var form = (
     Generation time: <input type="number" min="0" max="511" defaultValue="15"/> seconds <br />
     <input type="submit" value="Start simulation" />
   </form>
-)
+);
+
+var stats = (
+  <>
+    Generations: 1 <br />
+    Blobs: 12
+  </>
+);
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <Window name="Options" content={form} />
-    <Window name="Game" content={""} />
-    <Window name="Statistics" content={ <>Generations : 1</>} />
+    <Window name="Game" content={<div className="game"></div>}/>
+    <Window name="Statistics" content={stats} />
   </React.StrictMode>
 )

@@ -3,10 +3,10 @@ function Window(props:any){
     const [classes, setClasses] = useState("window");
     function changeClasses(){
         if(classes == "window min"){
-            setClasses("window")
+            setClasses("window");
         }
         else{
-            setClasses("window min")
+            setClasses("window min");
         }
     }
     return(
