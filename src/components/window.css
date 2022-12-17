@@ -5,8 +5,8 @@
 }
 .window{
     background-color: var(--secondary);
-    width: 400px;
-    height: 400px;
+    width: 800px;
+    height: 800px;
     border-radius: 10px;
 }
 .top{
@@ -17,4 +17,9 @@
     color: var(--font-color);
     font-family: monospace;
     padding: 10px 0 0 10px;
+}
+.content, #simulation{
+    height: calc(100% - 30px);
+    width: 100%;
+    border-radius: 5px;
 }
