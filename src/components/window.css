@@ -1,0 +1,20 @@
+:root{
+    --primary: #4c5359;
+    --secondary: #34383c;
+    --font-color: #a1a9ae;
+}
+.window{
+    background-color: var(--secondary);
+    width: 400px;
+    height: 400px;
+    border-radius: 10px;
+}
+.top{
+    height: 30px;
+    width: calc(100% - 10px);
+    border-radius: 10px 10px 0 0;
+    background-color: var(--primary);
+    color: var(--font-color);
+    font-family: monospace;
+    padding: 10px 0 0 10px;
+}
